@@ -23,3 +23,9 @@ def check_exists(repo,package,version):
         return repositories[repo].check_exists(package,version)
     else:
         return "ERR_NO_CHECK_EXISTS"
+
+def repo_update(repo):
+    if repo in repositories:
+        repositories[repo].update_repo()
+    else:
+        return "ERR_NO_UPDATE"
