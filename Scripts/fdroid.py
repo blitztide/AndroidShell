@@ -1,5 +1,7 @@
 import os,requests
 import zipfile
+from io import BytesIO
+import time
 
 repo_path = "/UNI/db/fdroid/repo.json"
 name = "F-Droid"
@@ -27,18 +29,23 @@ def check_exists(package,version):
 def update_repo():
     'updates the local index of the repository'
     if os.path.exists(repo_path):
-        print("Last updated:", os.path.getmtime(repo_path))
+        filetime = os.path.getmtime(repo_path)
+        current_time = time.time()
+        if filetime < ( current_time - 86400 ):
+            print("Repo out of date")
+            fetch_repo()
+        else:
+            print("Repo up to date")
     else:
+        print("Repo not on disk")
         fetch_repo()
 
 def fetch_repo():
+    print("Updating fdroid repo")
     url = "https://f-droid.org/repo/index-v1.jar"
     response = requests.get(url,stream=True)
     if response.status_code == requests.status_codes.codes.ok:
-        if zipfile.is_zipfile(response.content):
-            fp = open(repo_path,"wb")
-            fp.write(zipfile.ZipFile(fp).read("index_v1.json"))
-            fp.close()
-        else:
-            raise("Not zip file")
-    
+        zp = zipfile.ZipFile(BytesIO(response.content))
+        fp = open(repo_path,"wb")
+        fp.write(zp.open("index-v1.json").read())
+        fp.close()
