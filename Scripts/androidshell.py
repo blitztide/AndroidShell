@@ -45,6 +45,12 @@ class AS(object):
                 print(search, "not listable")
         else:
             AS.do_help(args)
+    def do_repo(args):
+        'perform repo operations'
+        if not args == []:
+            repos.do_repo(args)
+        else:
+            print("Argument not supplied")
 
     def do_update(args):
         'Updates a specified repo'
@@ -59,7 +65,8 @@ class AS(object):
                 "download":AS.do_download,
                 "list":AS.do_list,
                 "analyse":AS.do_analyse,
-                "update":AS.do_update
+                "update":AS.do_update,
+                "repo":AS.do_repo
                 }
         AS.commands = commands
         AS.lists['repos'] = repos.repositories

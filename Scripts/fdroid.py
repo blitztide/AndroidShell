@@ -2,6 +2,8 @@ import os,requests
 import zipfile
 from io import BytesIO
 import time
+import json
+import pprint
 
 repo_path = "/UNI/db/fdroid/repo.json"
 name = "F-Droid"
@@ -49,3 +51,16 @@ def fetch_repo():
         fp = open(repo_path,"wb")
         fp.write(zp.open("index-v1.json").read())
         fp.close()
+
+def search(package):
+    json_data = open(repo_path)
+    jdata = json.load(json_data)
+    try:
+        jdata["packages"][package]
+    except:
+        print("Unable to locate package")
+        return
+    for version in jdata["packages"][package]:
+        print("{}: Version {} Updated: {}".format(package, version["versionCode"], version["added"]))
+
+    json_data.close()
